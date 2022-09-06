@@ -23,7 +23,7 @@ create table aut_autorizacao (
 
 -- tabela de ligação, não precisa mapear, se tiver informação só
 create table uau_usuario_autorizacao ( 
-  usr_id bigint unsigned not null,
+  usr_id bigint unsigned not null, -- unsgined = só valor positivos
   aut_id bigint unsigned not null,
   primary key (usr_id, aut_id),
   foreign key aut_usuario_fk (usr_id) references usr_usuario (usr_id) on delete restrict on update cascade,
