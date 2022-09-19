@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.carolinam.topicosespeciais.entity.Autorizacao;
 import com.carolinam.topicosespeciais.security.JwtUtils;
 import com.carolinam.topicosespeciais.security.Login;
 
@@ -29,6 +30,7 @@ public class loginController {
         auth = authManager.authenticate(auth);
         login.setPassword(null);
         login.setToken(JwtUtils.generateToken(auth));
+        login.setAutorizacao(auth.getAuthorities().iterator().next().getAuthority());
         return login;
     }
 
