@@ -1,5 +1,6 @@
 package com.carolinam.topicosespeciais.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.User;
-
+import org.springframework.transaction.annotation.Transactional;
 import com.carolinam.topicosespeciais.entity.Autorizacao;
 import com.carolinam.topicosespeciais.entity.Usuario;
 import com.carolinam.topicosespeciais.exception.RegistroNaoEncontradoException;
@@ -27,7 +28,7 @@ public class SegurancaService implements ISegurancaService {
     private AutorizacaoRepository autRepo;
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')") //no banco é ROLE_ADMIN
+    @PreAuthorize("hasRole('ADMIN')") // no banco é ROLE_ADMIN
     public Usuario NovoUsuario(Usuario usuario) {
         return usuarioRepo.save(usuario);
     }
@@ -36,6 +37,21 @@ public class SegurancaService implements ISegurancaService {
     public Usuario NovoUsuario(String nome, String senha) {
         Usuario usuario = new Usuario(nome, senha);
         return NovoUsuario(usuario);
+    }
+
+    @Override
+    @Transactional // só commita no fim,
+    public Usuario NovoUsuario(String nome, String senha, String autorizacao) {
+        Autorizacao aut = autRepo.findByNome(autorizacao);
+        if (aut == null) {
+            aut = new Autorizacao();
+            aut.setNome(autorizacao);
+            aut = autRepo.save(aut);
+        }
+        Usuario usuario = new Usuario(nome, senha);
+        usuario.setAutorizacoes(new HashSet<Autorizacao>());
+        usuario.getAutorizacoes().add(aut);
+        return usuarioRepo.save(usuario);
     }
 
     @Override
@@ -76,5 +92,4 @@ public class SegurancaService implements ISegurancaService {
         }
         throw new RegistroNaoEncontradoException("Autorização não encontrada!");
     }
-
 }

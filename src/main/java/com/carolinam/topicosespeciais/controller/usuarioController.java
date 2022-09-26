@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import com.carolinam.topicosespeciais.entity.Usuario;
@@ -28,7 +29,7 @@ public class usuarioController {
         return segurancaService.ListaUsuarios(); // spring sempre retorna json por padrão
     }
 
-    //GET
+    // GET
     // 8080-carolinamar-topicosespe-vvyd2gjo61c.ws-us63.gitpod.io/usuario/buscarPorId/3
     @GetMapping(value = "/buscarPorId/{id}")
     public Usuario buscarPorID(@PathVariable long id) {
@@ -39,6 +40,7 @@ public class usuarioController {
     // 8080-carolinamar-topicosespe-vvyd2gjo61c.ws-us63.gitpod.io/usuario/cadastrar
     @PostMapping(value = "/cadastrar") // url especifica da função
     public Usuario cadastrarUsuario(@RequestBody Usuario usuario) { // vai vir do body as infos do post
-        return segurancaService.NovoUsuario(usuario);
+        String autorizacoesNome = usuario.getAutorizacoes().iterator().next().getNome();
+        return segurancaService.NovoUsuario(usuario.getNome(),usuario.getSenha(),autorizacoesNome);
     }
 }
